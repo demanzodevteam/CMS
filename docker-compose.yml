@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   postgres:
@@ -8,21 +8,31 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: CMS
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   strapi:
     build:
       context: .
-    volumes:
-      - ./:/app
-      - ./app/node_modules
     ports:
       - "1337:1337"
-    env_file:
-      - .env.development
+    environment:
+      NODE_ENV: development
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: CMS
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      APP_KEYS: your_app_key
+      API_TOKEN_SALT: your_api_token_salt
+      ADMIN_JWT_SECRET: your_admin_jwt_secret
+      JWT_SECRET: your_jwt_secret
+    volumes:
+      - .:/app
+      - /app/node_modules
     depends_on:
       - postgres
     command: npm run develop
